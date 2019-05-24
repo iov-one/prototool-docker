@@ -1,6 +1,7 @@
 FROM golang:1.12.4-alpine3.9 AS build
 
 ARG PROTOTOOL_VERSION=1.6.0
+ARG PROTODOC_VERSION=1.2.0
 ARG PROTOC_GEN_JAVA_GRPC_VERSION=1.20.0
 ARG GOLANG_PROTOBUF_VERSION=1.3.1
 ARG GOGO_PROTOBUF_VERSION=1.2.1
@@ -49,6 +50,10 @@ RUN go get -d github.com/envoyproxy/protoc-gen-validate && \
 
 RUN curl -sSL https://search.maven.org/remotecontent?filepath=io/grpc/protoc-gen-grpc-java/$PROTOC_GEN_JAVA_GRPC_VERSION/protoc-gen-grpc-java-$PROTOC_GEN_JAVA_GRPC_VERSION-linux-x86_64.exe -o /usr/local/bin/protoc-gen-grpc-java && \
     chmod +x /usr/local/bin/protoc-gen-grpc-java
+
+RUN GO111MODULE=on go get \
+  github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@v${PROTODOC_VERSION} && \
+  mv /go/bin/protoc-gen-doc /usr/local/bin/ 
 
 RUN upx --lzma /usr/local/bin/*
 
