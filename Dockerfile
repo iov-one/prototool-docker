@@ -2,6 +2,7 @@ FROM golang:1.12.4-alpine3.9 AS build
 
 ARG PROTOTOOL_VERSION=1.6.0
 ARG PROTODOC_VERSION=1.2.0
+ARG PROTOC_VERSION=3.7.1
 ARG PROTOC_GEN_JAVA_GRPC_VERSION=1.20.0
 ARG GOLANG_PROTOBUF_VERSION=1.3.1
 ARG GOGO_PROTOBUF_VERSION=1.2.1
@@ -57,9 +58,7 @@ RUN GO111MODULE=on go get \
 
 RUN upx --lzma /usr/local/bin/*
 
-# let's download protoc now (so prototool doesn't auto-download everytime)
-# TODO: move ARG PROTOC_VERSION to top
-ARG PROTOC_VERSION=3.7.1
+# we download protoc in order to execute protoc directly with this same image (needed for protodocs)
 ADD https://github.com/google/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-x86_64.zip ./
 RUN apk --no-cache add --update unzip && \
   unzip protoc-${PROTOC_VERSION}-linux-x86_64.zip -d /usr/local && \
