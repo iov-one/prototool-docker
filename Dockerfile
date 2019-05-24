@@ -53,9 +53,17 @@ RUN curl -sSL https://search.maven.org/remotecontent?filepath=io/grpc/protoc-gen
 
 RUN GO111MODULE=on go get \
   github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@v${PROTODOC_VERSION} && \
-  mv /go/bin/protoc-gen-doc /usr/local/bin/ 
+  mv /go/bin/protoc-gen-doc /usr/local/bin/
 
 RUN upx --lzma /usr/local/bin/*
+
+# let's download protoc now (so prototool doesn't auto-download everytime)
+# TODO: move ARG PROTOC_VERSION to top
+ARG PROTOC_VERSION=3.7.1
+ADD https://github.com/google/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-x86_64.zip ./
+RUN apk --no-cache add --update unzip && \
+  unzip protoc-${PROTOC_VERSION}-linux-x86_64.zip -d /usr/local && \
+  rm protoc-${PROTOC_VERSION}-linux-x86_64.zip
 
 FROM alpine:3.9
 ENV PROTOTOOL_CACHE_PATH=/tmp
@@ -63,5 +71,6 @@ ENV LD_LIBRARY_PATH=/lib64:/lib
 WORKDIR /work
 RUN apk --no-cache add --update ca-certificates libc6-compat
 COPY --from=build /usr/local/bin /usr/local/bin
-COPY --from=build /usr/include /usr/include 
+COPY --from=build /usr/local/include /usr/local/include
+COPY --from=build /usr/include /usr/include
 RUN chmod -R 755 /usr/include
