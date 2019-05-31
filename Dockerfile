@@ -65,7 +65,7 @@ RUN apk --no-cache add --update unzip && \
   rm protoc-${PROTOC_VERSION}-linux-x86_64.zip
 
 FROM alpine:3.9
-ENV PROTOTOOL_CACHE_PATH=/tmp
+ENV PROTOTOOL_CACHE_PATH=/proto-cache
 ENV LD_LIBRARY_PATH=/lib64:/lib
 WORKDIR /work
 RUN apk --no-cache add --update ca-certificates libc6-compat
@@ -73,3 +73,11 @@ COPY --from=build /usr/local/bin /usr/local/bin
 COPY --from=build /usr/local/include /usr/local/include
 COPY --from=build /usr/include /usr/include
 RUN chmod -R 755 /usr/include
+
+COPY cache/protoc_371.yaml /work/prototool.yaml
+RUN prototool cache update
+COPY cache/protoc_380.yaml /work/prototool.yaml
+RUN prototool cache update
+RUN rm /work/prototool.yaml
+
+RUN chmod -R 755 /proto-cache
