@@ -71,3 +71,15 @@ Prototool can now be invoked as follows:
 # All
 ./prototool.sh all
 ```
+
+Cache
+-----
+
+To avoid constant downloading of protoc everytime we run prototool from this image
+(which is about 10MB and slow if you are not on a good connection), we cache
+some recent versions of protoc while building the image. If you use one of the
+following in your project-specific prototool.yaml file, it will be read from the cache.
+If you wish to add more versions, please update the Dockerfile accordingly.
+
+* protoc 3.7.1
+* protoc 3.8.0
