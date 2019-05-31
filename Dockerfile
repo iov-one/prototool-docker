@@ -73,5 +73,11 @@ COPY --from=build /usr/local/bin /usr/local/bin
 COPY --from=build /usr/local/include /usr/local/include
 COPY --from=build /usr/include /usr/include
 RUN chmod -R 755 /usr/include
+
+COPY cache/protoc_371.yaml /work/prototool.yaml
 RUN prototool cache update
+COPY cache/protoc_380.yaml /work/prototool.yaml
+RUN prototool cache update
+RUN rm /work/prototool.yaml
+
 RUN chmod -R 755 /proto-cache
